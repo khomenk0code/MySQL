@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<style>
+        .done {
+            text-decoration: line-through;
+        }
+        [v-cloak] {
+            display: none;
+        }
+	</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+	<title>Задачи</title>
+</head>
+<body class="bg-secondary" >
+<div id="app" v-cloak>
+	<div id="app ">
+		<nav class="navbar navbar-dark bg-primary">
+			<div class="container">
+				<span class="navbar-brand mb-0 h1">Список дел</span>
+			</div>
+		</nav>
+		<div class="container mt-4">
+			<h5 class="mb-3">{{ new Date() | formatDate }}</h5>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="input-group mb-3">
+						<input type="text" class="form-control" placeholder="Введите название задачи" v-model="todoTitle" @keyup.enter="addTodo">
+						<button class="btn btn-primary" type="button" @click="addTodo">Добавить</button>
+					</div>
+				</div>
+			</div>
+			<div v-if="todos.length === 0" class="text-muted mb-3">У вас 0 задач, добавьте новую</div>
+			<div v-else>
+				<h6 class="mb-3">Ваши задачи</h6>
+				<div v-for="(todo, i) in todos" :key="i" class="row align-items-center mb-2">
+					<div class="col-md-1">
+						<input type="checkbox" class="form-check-input" v-model="todo.done">
+					</div>
+					<div class="col-md-9">
+						<div :class="{ done: todo.done }">{{ todo.title | capitalize }}</div>
+						<small>Добавлено в: {{ todo.date | formatDate }}</small>
+					</div>
+					<div class="col-md-2">
+						<button class="btn btn-danger btn-sm" @click="removeTodo(todo.id)">
+							<i class="material-icons">close</i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                isDark: true,
+                show: true,
+                todoTitle: '',
+                todos: []
+            }
+        },
+        methods: {
+            addTodo() {
+                const title = this.todoTitle.trim()
+                if (!title) {
+                    return
+                }
+                this.todos.push({
+                    title: title,
+                    id: Math.random(),
+                    done: false,
+                    date: new Date()
+                })
+                this.todoTitle = ''
+            },
+            removeTodo(id) {
+                this.todos = this.todos.filter(t => t.id !== id)
+            }
+        },
+        filters: {
+            capitalize(value) {
+                return value.toString().charAt(0).toUpperCase() + value.slice(1)
+            },
+            formatDate(value) {
+                return new Intl.DateTimeFormat('ru-RU', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: '2-digit'
+                }).format(new Date(value))
+            }
+        }
+    })
+</script>
+</body>
+</html>
